@@ -14,7 +14,7 @@ class Base: JFrame() {
         defaultCloseOperation = EXIT_ON_CLOSE
 
         layout = GridLayout(2,1)
-        add(Outgoing)
+        add(Outgoing())
         add(Incoming)
 
         isVisible = true

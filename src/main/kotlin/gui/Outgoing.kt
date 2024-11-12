@@ -11,7 +11,7 @@ import javax.swing.JTextArea
 import javax.swing.JTextField
 
 
-object Outgoing: JPanel() {
+class Outgoing: JPanel() {
     init {
         layout = GridBagLayout()
 
