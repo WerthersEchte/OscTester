@@ -87,7 +87,8 @@ object Incoming: JPanel() {
         logConstraints.weightx = 1.0
         logConstraints.weighty = 1.0
         logConstraints.fill = GridBagConstraints.BOTH
-        add(log, logConstraints)
+        val scroll = JScrollPane (log, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        add(scroll, logConstraints)
     }
 
     private fun onChange(){
@@ -122,8 +123,11 @@ object Incoming: JPanel() {
     }
 
     fun log(source: String, message: String){
-        messages.add(Pair(LocalDateTime.now(), "$source -> $message"))
-        onChange()
+        val osc = "$source -> $message"
+        messages.add(Pair(LocalDateTime.now(), osc))
+        if(containsAll(osc)) {
+            onChange()
+        }
     }
 
 }

@@ -5,10 +5,7 @@ import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.time.LocalDateTime
-import javax.swing.JButton
-import javax.swing.JPanel
-import javax.swing.JTextArea
-import javax.swing.JTextField
+import javax.swing.*
 
 
 class Outgoing: JPanel() {
@@ -17,13 +14,15 @@ class Outgoing: JPanel() {
 
         val log = JTextArea()
         log.isEditable = false
+
         val logConstraints = GridBagConstraints()
         logConstraints.gridx = 0;
         logConstraints.gridy = 0;
         logConstraints.weightx = 1.0
         logConstraints.weighty = 1.0
         logConstraints.fill = GridBagConstraints.BOTH
-        add(log, logConstraints)
+        val scroll = JScrollPane (log, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        add(scroll, logConstraints)
 
         val control = JPanel()
         control.layout = GridBagLayout()
@@ -64,6 +63,7 @@ class Outgoing: JPanel() {
         message.addActionListener{
             sendMessage()
         }
+
         val messageConstraints = GridBagConstraints()
         messageConstraints.weightx = 1.0
         messageConstraints.fill = GridBagConstraints.HORIZONTAL
