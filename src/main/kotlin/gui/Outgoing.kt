@@ -45,6 +45,7 @@ class Outgoing: JPanel() {
         setHint(message, "osc message")
         message.minimumSize =  Dimension(50, 27)
         message.preferredSize =  Dimension(Int.MAX_VALUE, 27)
+        val listOfOSC = mutableSetOf<String>()
         val sendMessage = {
             try {
                 val sender = OSCSender(ipToSendTo.text, portToSendTo.text.toInt())
@@ -54,6 +55,7 @@ class Outgoing: JPanel() {
                 } else {
                     sender.send(messageParts[0], parseArgs(messageParts.subList(1, messageParts.size)))
                 }
+                listOfOSC.add(message.text)
                 log.append("${LocalDateTime.now().format(TIME_FORMATER)}: [${ipToSendTo.text}:${portToSendTo.text}] -> ${message.text}\n")
             } catch (e:Exception){
                 log.append("${LocalDateTime.now().format(TIME_FORMATER)}: Error sending message: ${e.localizedMessage}\n")
@@ -63,6 +65,8 @@ class Outgoing: JPanel() {
         message.addActionListener{
             sendMessage()
         }
+
+        Autocomplete(message, listOfOSC)
 
         val messageConstraints = GridBagConstraints()
         messageConstraints.weightx = 1.0
