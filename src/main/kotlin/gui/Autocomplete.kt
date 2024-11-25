@@ -2,6 +2,7 @@ package de.fhkiel.rob.legoosctester.gui
 
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import javax.swing.JCheckBoxMenuItem
 import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
 import javax.swing.JTextField
@@ -22,9 +23,7 @@ class Autocomplete(private val textField: JTextField, val history: MutableSet<St
         textField.addKeyListener( object : KeyListener {
             override fun keyTyped(e: KeyEvent) {
                 if (e.isControlDown && e.keyChar == ' ') {
-                    if(textField.text.isNotBlank()) {
-                        suggest()
-                    }
+                    suggest()
                 }
             }
 
@@ -46,33 +45,45 @@ class Autocomplete(private val textField: JTextField, val history: MutableSet<St
             override fun keyReleased(e: KeyEvent) {/* not needed */}
 
         })
+
+        val menu = JPopupMenu()
+        val toggleAutocomplete = JCheckBoxMenuItem("Automatic autocomplete hint")
+        toggleAutocomplete.addActionListener {
+            showOnChange = toggleAutocomplete.isSelected
+        }
+        menu.add(toggleAutocomplete)
+
+        textField.componentPopupMenu = menu
     }
 
+    var showOnChange = false
     override fun insertUpdate(e: DocumentEvent?) {
-        if(textField.text.isNotBlank()) {
+        if(showOnChange) {
             suggest()
         }
     }
 
     override fun removeUpdate(e: DocumentEvent?) {
-        if(textField.text.isNotBlank()) {
+        if(showOnChange) {
             suggest()
         }
     }
 
     override fun changedUpdate(e: DocumentEvent?) {
-        if(textField.text.isNotBlank()) {
+        if(showOnChange) {
             suggest()
         }
     }
 
     private fun suggest(){
-        menu.isVisible = false
-        suggestions = history.filter { it.startsWith(textField.text) }.filter { it != textField.text }
-        menu = buildMenu()
-        if(menu.components.isNotEmpty()) {
-            menu.show(textField, 0, textField.height)
-            textField.requestFocusInWindow()
+        if(textField.text.isNotBlank()) {
+            menu.isVisible = false
+            suggestions = history.filter { it.startsWith(textField.text) }.filter { it != textField.text }
+            menu = buildMenu()
+            if (menu.components.isNotEmpty()) {
+                menu.show(textField, 0, textField.height)
+                textField.requestFocusInWindow()
+            }
         }
     }
 
