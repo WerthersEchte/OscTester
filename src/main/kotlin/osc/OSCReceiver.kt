@@ -11,7 +11,7 @@ object OSCReceiver {
         private set
     private lateinit var receiver: OSCPortIn
 
-    fun start(port: Int = 9001){
+    fun start(port: Int = 9001) {
         receiver = OSCPortIn(port)
         receiver.dispatcher.addListener(
             object : MessageSelector {
@@ -33,14 +33,14 @@ object OSCReceiver {
         this.port = port
     }
 
-    fun stop(){
-        if(this::receiver.isInitialized) {
+    fun stop() {
+        if (this::receiver.isInitialized) {
             receiver.stopListening()
             this.port = -1
         }
     }
 
-    private fun newMessage(path: String, args: List<Any>){
-        log(path,"${args}")
+    private fun newMessage(path: String, args: List<Any>) {
+        log(path, "${args}")
     }
 }

@@ -8,7 +8,7 @@ import javax.swing.text.JTextComponent
 
 val TIME_FORMATER = DateTimeFormatter.ofPattern("HH:mm:ss:SSS")
 
-fun setHint(component: JTextComponent, hint: String){
+fun setHint(component: JTextComponent, hint: String) {
     val paddedHint = " $hint"
     component.addFocusListener(object : FocusListener {
         override fun focusGained(e: FocusEvent) {
@@ -37,22 +37,24 @@ fun setHint(component: JTextComponent, hint: String){
 
 fun parseArgs(list: List<String>): List<Any> {
     val args = mutableListOf<Any>()
-    for(e in list){
-        try{
-            if(e.contains(".")) {
+    for (e in list) {
+        try {
+            if (e.contains(".")) {
                 args.add(e.toFloat())
                 continue
             }
-        } catch(_: Exception){}
-        try{
+        } catch (_: Exception) {
+        }
+        try {
             args.add(e.toInt())
             continue
-        } catch(_: Exception){}
-        if(e.trim().lowercase() == "true"){
+        } catch (_: Exception) {
+        }
+        if (e.trim().lowercase() == "true") {
             args.add(true)
             continue
         }
-        if(e.trim().lowercase() == "false"){
+        if (e.trim().lowercase() == "false") {
             args.add(false)
             continue
         }

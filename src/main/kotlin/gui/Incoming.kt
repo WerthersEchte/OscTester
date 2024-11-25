@@ -11,15 +11,15 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-object Incoming: JPanel() {
+object Incoming : JPanel() {
     private fun readResolve(): Any = Incoming
 
     private val log: JTextArea = JTextArea()
     private val filter: JTextField = JTextField()
 
-    private var messages: MutableList<Pair<LocalDateTime, String>> = mutableListOf();
+    private var messages: MutableList<Pair<LocalDateTime, String>> = mutableListOf()
 
-    init{
+    init {
         layout = GridBagLayout()
 
         val control = JPanel()
@@ -36,7 +36,7 @@ object Incoming: JPanel() {
         val serverChange = {
             try {
                 val port = portToListenTo.text.toInt()
-                if(OSCReceiver.port != port) {
+                if (OSCReceiver.port != port) {
                     OSCReceiver.stop()
                     OSCReceiver.start(port)
                     log("Server restarted", "Listening to port $port")
@@ -49,23 +49,33 @@ object Incoming: JPanel() {
             serverChange()
         }
         portToListenTo.addFocusListener(object : FocusListener {
-            override fun focusGained(e: FocusEvent?) { /* not needed */ }
+            override fun focusGained(e: FocusEvent?) { /* not needed */
+            }
+
             override fun focusLost(e: FocusEvent?) {
                 serverChange()
             }
         })
         portToListenTo.horizontalAlignment = JTextField.CENTER
-        portToListenTo.minimumSize =  Dimension(50, 27)
-        portToListenTo.preferredSize =  Dimension(50, 27)
+        portToListenTo.minimumSize = Dimension(50, 27)
+        portToListenTo.preferredSize = Dimension(50, 27)
         control.add(portToListenTo)
 
         setHint(filter, "filter")
-        filter.minimumSize =  Dimension(50, 27)
-        filter.preferredSize =  Dimension(Int.MAX_VALUE, 27)
+        filter.minimumSize = Dimension(50, 27)
+        filter.preferredSize = Dimension(Int.MAX_VALUE, 27)
         filter.document.addDocumentListener(object : DocumentListener {
-            override fun insertUpdate(e: DocumentEvent?) { onChange() }
-            override fun removeUpdate(e: DocumentEvent?) { onChange() }
-            override fun changedUpdate(e: DocumentEvent?) { onChange() }
+            override fun insertUpdate(e: DocumentEvent?) {
+                onChange()
+            }
+
+            override fun removeUpdate(e: DocumentEvent?) {
+                onChange()
+            }
+
+            override fun changedUpdate(e: DocumentEvent?) {
+                onChange()
+            }
 
         })
         val filterConstraints = GridBagConstraints()
@@ -74,58 +84,58 @@ object Incoming: JPanel() {
         control.add(filter, filterConstraints)
 
         val controlConstraints = GridBagConstraints()
-        controlConstraints.gridx = 0;
-        controlConstraints.gridy = 0;
+        controlConstraints.gridx = 0
+        controlConstraints.gridy = 0
         controlConstraints.weightx = 1.0
         controlConstraints.fill = GridBagConstraints.HORIZONTAL
         add(control, controlConstraints)
 
         log.isEditable = false
         val logConstraints = GridBagConstraints()
-        logConstraints.gridx = 0;
-        logConstraints.gridy = 1;
+        logConstraints.gridx = 0
+        logConstraints.gridy = 1
         logConstraints.weightx = 1.0
         logConstraints.weighty = 1.0
         logConstraints.fill = GridBagConstraints.BOTH
-        val scroll = JScrollPane (log, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        val scroll = JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         add(scroll, logConstraints)
     }
 
-    private fun onChange(){
+    private fun onChange() {
         deleteOldAndToMuch()
         val toDisplay = messages
             .filter { containsAll(it.second) }
             .map { "${it.first.format(TIME_FORMATER)}: ${it.second}\n" }
-            .fold("", {a, b -> a + b})
+            .fold("", { a, b -> a + b })
 
         SwingUtilities.invokeLater {
             log.text = toDisplay
-            log.setCaretPosition(log.document.length);
+            log.setCaretPosition(log.document.length)
         }
     }
 
-    private fun containsAll(string: String): Boolean{
-        if(filter.text.trim() == filter.toolTipText.trim()){
+    private fun containsAll(string: String): Boolean {
+        if (filter.text.trim() == filter.toolTipText.trim()) {
             return true
         }
 
-        for(part in filter.text.split(" ")){
-            if(!string.contains(part, true)){
+        for (part in filter.text.split(" ")) {
+            if (!string.contains(part, true)) {
                 return false
             }
         }
         return true
     }
 
-    private fun deleteOldAndToMuch(minutesAgo: Long = 10, maxMessages: Int = 10000){
+    private fun deleteOldAndToMuch(minutesAgo: Long = 10, maxMessages: Int = 10000) {
         val tenMinutesAgo = LocalDateTime.now().minusMinutes(minutesAgo)
-        messages = messages.filter { it.first.isAfter(tenMinutesAgo)  }.takeLast(maxMessages).toMutableList()
+        messages = messages.filter { it.first.isAfter(tenMinutesAgo) }.takeLast(maxMessages).toMutableList()
     }
 
-    fun log(source: String, message: String){
+    fun log(source: String, message: String) {
         val osc = "$source -> $message"
         messages.add(Pair(LocalDateTime.now(), osc))
-        if(containsAll(osc)) {
+        if (containsAll(osc)) {
             onChange()
         }
     }
